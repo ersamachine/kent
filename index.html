@@ -242,7 +242,7 @@ function panelView(){
    </div>
    <div class="quick">
     <button class="qbtn qsell tap" onclick="openSheet('Satış')">${ic('plus',16,'#fff')} Satış ekle</button>
-    <button class="qbtn qcoll tap" onclick="openSheet('Tahsil')">${ic('plus',16,'#fff')} Tahsilat</button>
+    <button class="qbtn qcoll tap" onclick="go('ersaodeme')">${ic('upload',16,'#fff')} Ersa'ya Ödemeler</button>
    </div>
   </div>
   <div class="sec">Modüller</div>
@@ -252,11 +252,6 @@ function panelView(){
   <div class="wide tap" onclick="go('siparisler')">
    <div class="mi" style="background:#2A1414;">${ic('box',23,'#FF6B5E')}</div>
    <div style="flex:1;min-width:0;"><div class="ml" style="font-size:14.5px;color:#fff;font-weight:700;">Siparişlerim</div><div class="mv" style="font-size:11.5px;color:var(--muted);">${O().length} sipariş · ${oAcik()} cihaz yolda/bekleyen</div></div>
-   ${ic('chev',18,'#6A6A6A')}
-  </div>
-  <div class="wide tap" onclick="go('ersaodeme')">
-   <div class="mi" style="background:#192639;">${ic('upload',22,'#5B8DEF')}</div>
-   <div style="flex:1;min-width:0;"><div class="ml" style="font-size:14.5px;color:#fff;font-weight:700;">Ersa'ya Ödemeler</div><div class="mv" style="font-size:11.5px;color:var(--muted);">borç ${money(ersaBorc())}${ersaBekleyen()?' · '+money(ersaBekleyen())+' onay bekliyor':''}</div></div>
    ${ic('chev',18,'#6A6A6A')}
   </div>
   <div style="text-align:center;margin-top:16px;"><span class="tap" onclick="load()" style="font-size:12px;color:var(--muted);font-weight:600;">${ic('refresh',13,'#8A8A8A')} Verileri yenile</span></div>
@@ -343,8 +338,14 @@ function orderCard(o){const s=ST[o.Durum]||ST["Bekliyor"];return `<div class="oc
    <div class="eta">Tahmini teslim: <b style="color:#cfcfcf;">${dT(o.ETA)}</b></div>
   </div></div>`;}
 
+function ersaHareketler(){
+ const a=(DATA.ersaAlimlar||[]).map(x=>({tip:"Alım",t:x.Tarih,aciklama:x.Aciklama||"",tutar:num(x.Tutar)}));
+ const o=(DATA.ersaOdemeler||[]).map(x=>({tip:"Ödeme",t:x.Tarih,yontem:x.Yontem||"",tutar:num(x.Tutar),durum:x.Durum||"Bildirildi",id:x.ID}));
+ return [...a,...o].sort((p,q)=>(String(p.t)<String(q.t)?1:String(p.t)>String(q.t)?-1:0));
+}
 function ersaOdemeView(){
- return `<div class="pad stg">${head("Ersa'ya Ödemeler","Senden alınan makinelerin ödemesi")}
+ const H2=ersaHareketler();
+ return `<div class="pad stg">${head("Ersa'ya Ödemeler","Senden alınan makinelerin ödemesi · KENT → ERSA")}
   <div class="blk" style="padding:17px 18px;margin-top:6px;">
    <div style="font-size:10px;font-weight:700;letter-spacing:1.3px;color:#9b9b95;">ERSA'YA KALAN BORÇ ($)</div>
    <div class="bignum" style="font-size:30px;color:var(--borc);margin-top:3px;">${money(ersaBorc())}</div>
@@ -355,15 +356,23 @@ function ersaOdemeView(){
    </div>
   </div>
   <button class="btnp tap" onclick="openSheet('odemeYeni')">${ic('upload',16,'#fff')} ERSA'ya ödeme bildir</button>
-  <div class="sec" style="margin-top:18px;">Gönderdiğim ödemeler<span class="scount">${EO().length} kayıt</span></div>
+  <div class="sec" style="margin-top:18px;">Hareketler<span class="scount">alım & ödeme</span></div>
   <div class="blk" style="padding:2px 15px;">
-   ${EO().length?EO().slice().reverse().map(p=>{const s=PST[p.Durum]||PST["Bildirildi"];return `<div class="lrow tap" onclick="S.sel='${esc(p.ID)}';openSheet('odemeDetay')">
-     <div class="li" style="background:${s.bg};">${ic('upload',17,s.c)}</div>
-     <div style="flex:1;min-width:0;"><div class="lt">${money(num(p.Tutar))}</div><div class="ls">${dT(p.Tarih)} · ${esc(p.Yontem||"")}</div></div>
-     <div style="text-align:right;"><span class="bdg" style="background:${s.bg};color:${s.c};">${p.Durum==='Onaylandı'?'✓ '+s.t:s.t}</span></div>
-   </div>`;}).join(""):`<div class="empty">Henüz ödeme bildirimi yok.</div>`}
+   ${H2.length?H2.map(x=>{
+     if(x.tip==="Alım") return `<div class="lrow">
+       <div class="li" style="background:#2A1414;">${ic('box',17,'var(--borc)')}</div>
+       <div style="flex:1;min-width:0;"><div class="lt">Makine alımı</div><div class="ls">${dT(x.t)} · ${esc(x.aciklama)}</div></div>
+       <div class="amt" style="color:var(--borc);">+${money(x.tutar)}</div>
+     </div>`;
+     const s=PST[x.durum]||PST["Bildirildi"];
+     return `<div class="lrow tap" onclick="S.sel='${esc(x.id)}';openSheet('odemeDetay')">
+       <div class="li" style="background:#192639;">${ic('upload',17,'var(--in)')}</div>
+       <div style="flex:1;min-width:0;"><div class="lt">Ödeme</div><div class="ls">${dT(x.t)} · ${esc(x.yontem)}</div><span class="bdg" style="background:${s.bg};color:${s.c};">${x.durum==='Onaylandı'?'✓ '+s.t:s.t}</span></div>
+       <div class="amt" style="color:var(--in);">−${money(x.tutar)}</div>
+     </div>`;
+   }).join(""):`<div class="empty">Henüz hareket yok.</div>`}
   </div>
-  <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:12px;line-height:1.55;">Sen ödemeyi <b>onayladığında</b> ERSA'ya borç düşer.<br>Müşteriden net alacak bundan etkilenmez — iki bakiye ayrı.</div>
+  <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:12px;line-height:1.55;"><b>+ Alım</b> senden makine aldı (borç artar) · <b>− Ödeme</b> KENT bildirir, sen onaylayınca borç düşer.</div>
  </div>`;
 }
 
