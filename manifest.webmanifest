@@ -1,0 +1,12 @@
+{
+  "name": "KENT TİCARET · Makine Cari",
+  "short_name": "KENT Cari",
+  "start_url": ".",
+  "scope": ".",
+  "display": "standalone",
+  "background_color": "#111111",
+  "theme_color": "#C51515",
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any maskable" }
+  ]
+}

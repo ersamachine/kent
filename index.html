@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="utf-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover, maximum-scale=1.0, user-scalable=no"/>
+<meta name="theme-color" content="#C51515"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="black"/>
+<meta name="apple-mobile-web-app-title" content="KENT Cari"/>
+<link rel="manifest" href="manifest.webmanifest"/>
+<link rel="apple-touch-icon" href="icon.svg"/>
+<title>KENT TİCARET · Makine Cari</title>
+<style>
+:root{--red:#C51515;--reddk:#7d0d0d;--bg:#111111;--line:#383838;--muted:#8A8A8A;--muted2:#5A5A5A;--gold:#F5A623;--blue:#5B8DEF;--purple:#B98BFF;--borc:#FF6B5E;--in:#5B8DEF;}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+body{font-family:-apple-system,BlinkMacSystemFont,'SF Pro Display','Inter',system-ui,sans-serif;background:#0B0B0B;color:#CFCFCF;min-height:100vh;padding:24px 12px 60px;}
+.bignum{font-weight:800;font-variant-numeric:tabular-nums;}.mono{font-variant-numeric:tabular-nums;}
+.lead{max-width:760px;margin:0 auto;text-align:center;}
+.lead h1{font-size:18px;font-weight:800;color:#fff;}
+.lead p{font-size:12.5px;color:var(--muted);margin-top:7px;line-height:1.55;}.lead b{color:#cfcfcf;}
+
+.stage{display:flex;justify-content:center;margin-top:20px;}
+.phone{width:380px;max-width:100%;height:782px;background:#0e0e0e;border-radius:46px;padding:5px;box-shadow:0 40px 90px rgba(0,0,0,.5);}
+.inner{width:100%;height:100%;background:var(--bg);border-radius:41px;overflow:hidden;display:flex;flex-direction:column;position:relative;}
+.sbar{height:34px;flex-shrink:0;display:flex;align-items:center;justify-content:space-between;padding:10px 22px 0;font-size:11px;font-weight:700;color:#fff;}
+.island{width:58px;height:15px;background:#0e0e0e;border-radius:11px;}
+.scr{flex:1;overflow-y:auto;overflow-x:hidden;position:relative;}.scr::-webkit-scrollbar{width:0;}
+.pad{padding:6px 18px 30px;}
+.tap{transition:transform .12s;cursor:pointer;}.tap:active{transform:scale(.97);}
+.tap:focus-visible{outline:2px solid var(--red);outline-offset:2px;border-radius:12px;}
+@keyframes su{from{transform:translateY(12px);opacity:0}to{transform:translateY(0);opacity:1}}
+@keyframes sh{from{transform:translateY(100%)}to{transform:translateY(0)}}@keyframes fd{from{opacity:0}to{opacity:1}}
+.stg>*{animation:su .38s cubic-bezier(.2,.7,.2,1) both;}
+.stg>*:nth-child(2){animation-delay:.04s}.stg>*:nth-child(3){animation-delay:.08s}.stg>*:nth-child(4){animation-delay:.12s}.stg>*:nth-child(5){animation-delay:.16s}
+
+.h1{font-weight:800;font-size:23px;color:#fff;}.sub{font-size:13px;color:var(--muted);margin-top:3px;}
+.sec{font-weight:700;font-size:14px;color:#fff;margin:17px 0 9px;display:flex;justify-content:space-between;align-items:center;}
+.sec .scount{font-size:11.5px;color:var(--muted);font-weight:600;}
+.blk{background:#181818;border-radius:20px;}
+.circ{width:34px;height:34px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;background:#202020;}
+.topbar{display:flex;align-items:center;justify-content:space-between;margin-top:4px;}
+.back{display:inline-flex;align-items:center;gap:3px;color:var(--muted);font-size:13px;font-weight:600;cursor:pointer;}
+i.ic svg{display:block;}
+
+.brand{display:flex;align-items:center;gap:10px;}
+.brand .bm{width:38px;height:38px;border-radius:11px;background:linear-gradient(135deg,#C51515,#7d0d0d);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:16px;flex-shrink:0;box-shadow:0 6px 16px rgba(197,21,21,.3);}
+.brand .bt{font-size:16px;font-weight:800;color:#fff;line-height:1.1;}.brand .bs{font-size:10.5px;color:var(--muted);margin-top:2px;}
+
+.kgrid3{display:flex;gap:8px;margin-top:13px;}
+.kbox{flex:1;background:#222;border-radius:11px;padding:9px;}
+.kbox .kl{font-size:9.5px;color:#9b9b95;}.kbox .kv{font-weight:800;font-variant-numeric:tabular-nums;font-size:15px;margin-top:1px;}
+
+.quick{display:flex;gap:10px;margin-top:13px;}
+.qbtn{flex:1;border:none;border-radius:15px;padding:13px;font-size:14px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;}
+.qsell{background:var(--red);color:#fff;box-shadow:0 8px 20px rgba(197,21,21,.28);}
+.qcoll{background:#202020;color:#fff;border:1px solid #2e2e2e;}
+
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:11px;}
+.modcard{background:#202020;border:1px solid #2a2a2a;border-radius:16px;padding:14px 13px;display:flex;flex-direction:column;gap:10px;cursor:pointer;transition:transform .12s;}
+.modcard:active{transform:scale(.97);}
+.modcard .mi{width:42px;height:42px;border-radius:12px;display:flex;align-items:center;justify-content:center;}
+.modcard .ml{font-size:13px;font-weight:700;color:#fff;}.modcard .mv{font-size:10.5px;color:var(--muted);margin-top:1px;}
+.wide{display:flex;align-items:center;gap:13px;background:#202020;border:1px solid #2a2a2a;border-radius:16px;padding:14px 15px;margin-top:11px;cursor:pointer;transition:transform .12s;}
+.wide:active{transform:scale(.985);}
+.wide .mi{width:44px;height:44px;border-radius:12px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+
+.lrow{display:flex;align-items:center;gap:12px;padding:13px 2px;border-top:1px solid var(--line);cursor:pointer;}
+.lrow:first-child{border-top:none;}
+.li{width:38px;height:38px;border-radius:11px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.lt{font-size:14px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;}
+.ls{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.amt{font-weight:800;font-variant-numeric:tabular-nums;font-size:14.5px;text-align:right;white-space:nowrap;}
+.bdg{display:inline-block;font-size:10px;font-weight:800;border-radius:7px;padding:2px 6px;margin-top:3px;}
+.bdg-b{background:#2A1414;color:var(--borc);border:1px solid #4a2222;}
+.bdg-c{background:#192639;color:var(--blue);border:1px solid #243a5a;}
+
+.exhead{display:flex;gap:8px;margin:12px 0 6px;}
+.exb{flex:1;background:#1a1a1a;border:1px solid #262626;border-radius:13px;padding:10px 11px;}
+.exb .el{font-size:9.5px;color:#9b9b95;font-weight:700;}.exb .ev{font-size:15px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:2px;}
+.chips{display:flex;gap:7px;overflow-x:auto;padding:4px 0 8px;}.chips::-webkit-scrollbar{height:0;}
+.chip{flex-shrink:0;font-size:12px;font-weight:700;padding:7px 13px;border-radius:20px;background:#1c1c1c;border:1px solid #2a2a2a;color:var(--muted);cursor:pointer;white-space:nowrap;}
+.chip.on{background:var(--red);border-color:var(--red);color:#fff;}
+.exrow{display:flex;align-items:flex-start;gap:10px;padding:12px 2px;border-top:1px solid #242424;}.exrow:first-child{border-top:none;}
+.exdate{font-size:11px;color:var(--muted2);font-variant-numeric:tabular-nums;width:46px;flex-shrink:0;line-height:1.3;font-weight:700;}
+.extur{font-size:13.5px;font-weight:700;color:#fff;}.exack{font-size:11.5px;color:var(--muted);margin-top:1px;}
+.exright{text-align:right;flex-shrink:0;}
+.examt{font-weight:800;font-variant-numeric:tabular-nums;font-size:14px;}.exbak{font-size:11px;color:var(--muted);font-variant-numeric:tabular-nums;margin-top:2px;}
+.exfoot{display:flex;justify-content:space-between;margin-top:14px;padding:14px;background:#181818;border-radius:16px;}
+.exfoot .efc{text-align:center;flex:1;}.exfoot .efl{font-size:10px;color:#9b9b95;font-weight:700;}.exfoot .efv{font-size:16px;font-weight:800;font-variant-numeric:tabular-nums;margin-top:3px;}
+
+.k4{display:flex;gap:8px;margin-top:14px;}
+.k4 .kbox{text-align:center;}.k4 .kv{font-size:20px;}
+.ocard{display:flex;align-items:center;gap:13px;background:#1a1a1a;border:1px solid #262626;border-radius:16px;padding:14px 15px;margin-bottom:10px;cursor:pointer;transition:transform .12s;}
+.ocard:active{transform:scale(.985);}
+.oi{width:46px;height:46px;border-radius:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.oqty{font-size:18px;font-weight:900;color:#fff;font-variant-numeric:tabular-nums;}.oqty small{font-size:10px;font-weight:700;color:rgba(255,255,255,.6);}
+.ot{font-size:14.5px;font-weight:700;color:#fff;}.os{font-size:11.5px;color:var(--muted);margin-top:2px;}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;font-weight:800;border-radius:8px;padding:4px 9px;}
+.eta{font-size:11px;color:var(--muted);margin-top:5px;font-variant-numeric:tabular-nums;}
+
+.ovl{position:absolute;inset:0;background:rgba(15,15,15,.62);z-index:60;display:flex;align-items:flex-end;animation:fd .2s;}
+.sheet{width:100%;background:#1c1c1c;border-radius:24px 24px 0 0;padding:18px 18px 26px;animation:sh .28s cubic-bezier(.2,.8,.2,1);max-height:92%;overflow-y:auto;}.sheet::-webkit-scrollbar{width:0;}
+.shead{display:flex;justify-content:space-between;align-items:center;margin-bottom:6px;}.shead .stt{font-weight:800;font-size:18px;color:#fff;}
+.lbl{display:block;font-size:12.5px;font-weight:700;color:#C8C8C4;margin:14px 0 6px;}
+.field{width:100%;border:1px solid var(--line);border-radius:13px;padding:12px 13px;font-size:14.5px;color:#fff;background:#202020;outline:none;font-family:inherit;}
+.field:focus{border-color:var(--red);}
+.row2{display:grid;grid-template-columns:1fr 1fr;gap:10px;}
+.toggle{display:flex;background:#161616;border:1px solid #2a2a2a;border-radius:14px;padding:4px;margin:6px 0 4px;}
+.toggle button{flex:1;border:none;background:transparent;color:var(--muted);font-family:inherit;font-size:13.5px;font-weight:700;padding:10px;border-radius:11px;cursor:pointer;}
+.toggle button.bon{background:var(--borc);color:#fff;}.toggle button.kon{background:var(--in);color:#fff;}
+.steps{display:flex;flex-direction:column;gap:8px;margin-top:6px;}
+.step{display:flex;align-items:center;gap:11px;padding:11px 13px;border-radius:13px;background:#161616;border:1px solid #262626;cursor:pointer;}
+.step .sd{width:24px;height:24px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;}
+.step .sn{font-size:14px;font-weight:700;color:#fff;}
+.btnp{width:100%;border:none;border-radius:15px;padding:15px;font-size:15px;font-weight:700;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:7px;cursor:pointer;color:#fff;background:var(--red);box-shadow:0 8px 20px rgba(197,21,21,.28);margin-top:16px;}
+
+.login{display:flex;flex-direction:column;justify-content:center;min-height:100%;padding:34px 28px;}
+.login .lm{width:74px;height:74px;border-radius:20px;background:linear-gradient(135deg,#C51515,#7d0d0d);display:flex;align-items:center;justify-content:center;font-weight:900;color:#fff;font-size:30px;margin:0 auto 16px;box-shadow:0 14px 34px rgba(197,21,21,.34);}
+.login h2{text-align:center;font-size:20px;font-weight:800;color:#fff;}
+.login .lt{text-align:center;font-size:12px;color:var(--muted);letter-spacing:1.5px;font-weight:700;margin:5px 0 30px;}
+.ersaby{text-align:center;font-size:11px;color:var(--muted2);margin-top:22px;}
+.empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:13px;line-height:1.6;}
+@media (max-width:560px){body{padding:10px 0 40px;}.phone{width:100%;height:88vh;border-radius:0;}.inner{border-radius:0;}.lead{padding:0 14px;}}
+
+.rememberbox{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:2px 0 16px;cursor:pointer;}
+.rememberbox input{width:16px;height:16px;accent-color:var(--red);}
+.lerr{color:#FF6B5E;font-size:12.5px;text-align:center;margin-top:12px;min-height:16px;}
+.banner{background:#2A1414;border:1px solid #4a2222;color:#FF9b8e;font-size:12.5px;border-radius:12px;padding:10px 13px;margin-top:12px;}
+#toasthost{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:90;pointer-events:none;}
+.toast{background:#000;color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:24px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:fd .2s;max-width:80%;text-align:center;}
+</style>
+</head>
+<body>
+<div class="stage"><div class="phone"><div class="inner" id="app">
+  <div class="sbar"><span id="clock">9:41</span><div class="island"></div><span style="font-size:10px;">▦ ▮ ▣</span></div>
+  <div class="scr" id="scr"></div>
+  <div id="host"></div>
+  <div id="toasthost"></div>
+</div></div></div>
+<script src="config.js"></script>
+<script>
+const P={users:"M16 19v-1a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v1M9 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8zM22 19v-1a4 4 0 0 0-3-3.8",user:"M5 20v-1a4 4 0 0 1 4-4h6a4 4 0 0 1 4 4v1M12 11a4 4 0 1 0 0-8 4 4 0 0 0 0 8z",receipt:"M5 3v18l2-1.5L9 21l2-1.5L13 21l2-1.5L17 21l2-1.5V3l-2 1.5L15 3l-2 1.5L11 3 9 4.5 7 3zM8 8h8M8 12h8",wallet:"M3 7a2 2 0 0 1 2-2h12a2 2 0 0 1 2 2M3 9a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2v8a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2zM16 12.5h3v3h-3a1.5 1.5 0 0 1 0-3z",doc:"M14 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V9zM14 3v6h6M8 13h8M8 17h8",box:"M21 8 12 3 3 8m18 0-9 5m9-5v8l-9 5m0-13L3 8m9 5v8M3 8v8l9 5",clock:"M12 22a10 10 0 1 0 0-20 10 10 0 0 0 0 20zM12 7v5l3 2",wrench:"M14.7 6.3a1 1 0 0 0 0 1.4l1.6 1.6a1 1 0 0 0 1.4 0l3.77-3.77a6 6 0 0 1-7.94 7.94l-6.91 6.91a2.12 2.12 0 0 1-3-3l6.91-6.91a6 6 0 0 1 7.94-7.94l-3.76 3.76z",truck:"M1 4h13v12H1zM14 8h4l3 3v5h-7zM6 19a2 2 0 1 0 0-.01M17 19a2 2 0 1 0 0-.01",plus:"M12 5v14M5 12h14",upload:"M12 3v13M6 9l6-6 6 6M5 21h14",x:"M18 6 6 18M6 6l12 12",check:"M20 6 9 17l-5-5",refresh:"M21 12a9 9 0 1 1-2.6-6.3M21 4v5h-5",logout:"M16 17l5-5-5-5M21 12H9M12 3H6a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h6",cl:"m15 6-6 6 6 6",chev:"m9 6 6 6-6 6"};
+function ic(n,s,col){const d=P[n];if(!d)return"";return `<svg width="${s||16}" height="${s||16}" viewBox="0 0 24 24" fill="none" stroke="${col||'currentColor'}" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">${d.split('M').filter(Boolean).map(p=>`<path d="M${p}"/>`).join('')}</svg>`;}
+const $=id=>document.getElementById(id);
+const esc=s=>(s==null?"":String(s)).replace(/[&<>"]/g,c=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;"}[c]));
+const num=v=>typeof v==="number"?v:(parseFloat(String(v==null?"":v).replace(/\s/g,"").replace(",","."))||0);
+const money=(n,c)=>{c=c||"$";n=n||0;const neg=n<0;return (neg?"-":"")+c+Math.round(Math.abs(n)).toLocaleString("tr-TR");};
+const dS=s=>{if(!s)return"—";const d=new Date(s);if(isNaN(d))return String(s);return String(d.getDate()).padStart(2,"0")+"."+String(d.getMonth()+1).padStart(2,"0");};
+const dY=s=>{if(!s)return"—";const d=new Date(s);if(isNaN(d))return String(s);return d.getFullYear();};
+const dT=s=>{if(!s)return"—";const d=new Date(s);if(isNaN(d))return String(s);return dS(s)+"."+d.getFullYear();};
+const todayISO=()=>{const d=new Date();return d.getFullYear()+"-"+String(d.getMonth()+1).padStart(2,"0")+"-"+String(d.getDate()).padStart(2,"0");};
+const trsort=(a,b)=>String(a).localeCompare(String(b),"tr");
+
+const ST={"Bekliyor":{c:"#F5A623",bg:"#2C2410",ic:"clock"},"Üretimde":{c:"#5B8DEF",bg:"#192639",ic:"wrench"},"Yolda":{c:"#B98BFF",bg:"#221A33",ic:"truck"},"Teslim":{c:"#CFCFCF",bg:"#262626",ic:"check"}};
+const STORDER=["Bekliyor","Üretimde","Yolda","Teslim"];
+const PST={"Bildirildi":{c:"#F5A623",bg:"#2C2410",t:"Onay bekliyor"},"Onaylandı":{c:"#5B8DEF",bg:"#192639",t:"ERSA onayladı"}};
+
+let DATA={musteriler:[],hareketler:[],siparisler:[],ersaOdemeler:[],ersaAlimlar:[]};
+const H=()=>DATA.hareketler;
+const custList=()=>[...new Set(H().map(x=>x.Musteri).filter(Boolean))].sort(trsort);
+const satislar=()=>H().filter(x=>x.Tur==="Satış");
+const tahsilatlar=()=>H().filter(x=>x.Tur==="Tahsil");
+const sumT=a=>a.reduce((s,x)=>s+num(x.Tutar),0);
+const custBalance=m=>sumT(satislar().filter(x=>x.Musteri===m))-sumT(tahsilatlar().filter(x=>x.Musteri===m));
+const totals=()=>{const b=sumT(satislar()),a=sumT(tahsilatlar());return{borc:b,alacak:a,bakiye:b-a};};
+const acikMusteri=()=>custList().filter(m=>custBalance(m)>0.5).length;
+function ekstre(f){const rows=H().map((x,i)=>({...x,_i:i})).filter(x=>!f||x.Musteri===f).sort((a,b)=>(String(a.Tarih)<String(b.Tarih)?-1:String(a.Tarih)>String(b.Tarih)?1:a._i-b._i));let bak=0;return rows.map(r=>{bak+=(r.Tur==="Satış"?num(r.Tutar):-num(r.Tutar));return{...r,bak};});}
+
+const O=()=>DATA.siparisler;
+const oAcik=()=>O().filter(o=>o.Durum!=="Teslim").reduce((s,o)=>s+num(o.Adet),0);
+const oYol=()=>O().filter(o=>o.Durum==="Yolda").reduce((s,o)=>s+num(o.Adet),0);
+const EO=()=>DATA.ersaOdemeler;
+const ersaAlim=()=>DATA.ersaAlimlar.reduce((s,x)=>s+num(x.Tutar),0);
+const ersaOnayli=()=>EO().filter(x=>x.Durum==="Onaylandı").reduce((s,x)=>s+num(x.Tutar),0);
+const ersaBekleyen=()=>EO().filter(x=>x.Durum==="Bildirildi").reduce((s,x)=>s+num(x.Tutar),0);
+const ersaBorc=()=>ersaAlim()-ersaOnayli();
+
+const AUTH={email:"kent@kentticaret.com",pass:"Kent2026**"};
+function getRemember(){try{return localStorage.getItem("kent_auth")==="1";}catch(e){return false;}}
+let S={authed:getRemember(),view:"panel",exM:"",sheet:null,sel:null,loading:true,err:"",loginErr:"",tmp:null};
+
+/* ---- ağ ---- */
+async function load(){
+ if(!window.API_URL||String(API_URL).indexOf("YAPISTIR")>=0){S.loading=false;S.err="config.js içine Apps Script adresini yazın.";render();return;}
+ S.loading=true;render();
+ try{
+  const r=await fetch(API_URL,{method:"GET"});const j=await r.json();
+  if(j.ok===false)throw new Error(j.error||"Hata");
+  DATA.musteriler=j.musteriler||[];DATA.hareketler=j.hareketler||[];DATA.siparisler=j.siparisler||[];DATA.ersaOdemeler=j.ersaOdemeler||[];DATA.ersaAlimlar=j.ersaAlimlar||[];
+  S.err="";
+ }catch(e){S.err="Bağlantı kurulamadı / adres hatalı.";}
+ S.loading=false;render();
+}
+async function post(payload){
+ const r=await fetch(API_URL,{method:"POST",headers:{"Content-Type":"text/plain;charset=utf-8"},body:JSON.stringify(payload)});
+ const j=await r.json(); if(j.ok===false)throw new Error(j.error||"Hata"); return j;
+}
+function toast(t){const h=$("toasthost");if(!h)return;h.innerHTML=`<div class="toast">${esc(t)}</div>`;setTimeout(()=>{h.innerHTML="";},1800);}
+
+/* ===== LOGIN ===== */
+function loginView(){return `<div class="login">
+  <div class="lm">K</div><h2>KENT TİCARET</h2><div class="lt">MAKİNE CARİ & SİPARİŞ</div>
+  <label class="lbl">E-posta</label><input id="lemail" class="field" type="email" value="${esc(AUTH.email)}" autocomplete="username">
+  <label class="lbl">Şifre</label><input id="lpass" class="field" type="password" placeholder="••••••••" autocomplete="current-password">
+  <label class="rememberbox"><input id="lrem" type="checkbox" ${getRemember()?'checked':''}> Beni hatırla</label>
+  <button class="btnp" id="lbtn" onclick="doLogin()">${ic('check',16,'#fff')} Giriş Yap</button>
+  <div class="lerr">${esc(S.loginErr||"")}</div>
+  <div class="ersaby">ERSA Machinery tarafından sağlandı</div></div>`;}
+function doLogin(){const em=($("lemail").value||"").trim().toLowerCase(),pw=$("lpass").value||"",rem=$("lrem")&&$("lrem").checked;
+ if(em===AUTH.email.toLowerCase()&&pw===AUTH.pass){if(rem){try{localStorage.setItem("kent_auth","1");}catch(e){}}S.authed=true;S.loginErr="";load();}
+ else{S.loginErr="E-posta veya şifre hatalı.";render();}}
+function logout(){try{localStorage.removeItem("kent_auth");}catch(e){}S.authed=false;S.view="panel";S.sheet=null;render();}
+
+const MODS=[
+ {id:"ekstre",t:"Cari Ekstre",ic:"doc",col:"#5B8DEF",bg:"#192639",sub:()=>"genel hareket dökümü"},
+ {id:"musteriler",t:"Müşteriler",ic:"users",col:"#B98BFF",bg:"#221A33",sub:()=>acikMusteri()+" açık · "+custList().length+" müşteri"},
+ {id:"satislar",t:"Satışlar",ic:"receipt",col:"#FF6B5E",bg:"#2A1414",sub:()=>satislar().length+" fatura · "+money(totals().borc)},
+ {id:"tahsilatlar",t:"Tahsilatlar",ic:"wallet",col:"#5B8DEF",bg:"#192639",sub:()=>tahsilatlar().length+" tahsilat · "+money(totals().alacak)}
+];
+
+function panelView(){
+ const T=totals();
+ return `<div class="pad stg">
+  <div class="topbar">
+   <div class="brand"><div class="bm">K</div><div><div class="bt">KENT TİCARET</div><div class="bs">Makine Cari & Sipariş · $</div></div></div>
+   <div class="circ tap" onclick="logout()">${ic('logout',18,'#EDEDED')}</div>
+  </div>
+  ${S.err?`<div class="banner">${esc(S.err)}</div>`:""}
+  <div class="blk" style="padding:16px 18px;margin-top:14px;">
+   <div style="display:flex;gap:14px;">
+    <div style="flex:1;min-width:0;">
+     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">MÜŞTERİDEN NET ALACAK</div>
+     <div class="bignum" style="font-size:25px;color:#fff;margin-top:3px;">${money(T.bakiye)}</div>
+     <div style="font-size:10px;color:var(--muted);margin-top:2px;">${acikMusteri()} açık müşteri</div>
+    </div>
+    <div style="width:1px;background:#2a2a2a;flex-shrink:0;"></div>
+    <div style="flex:1;min-width:0;">
+     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">ERSA'YA BORÇ</div>
+     <div class="bignum" style="font-size:25px;color:var(--borc);margin-top:3px;">${money(ersaBorc())}</div>
+     <div style="font-size:10px;color:${ersaBekleyen()?'var(--gold)':'var(--muted)'};margin-top:2px;">${ersaBekleyen()?money(ersaBekleyen())+' onay bekliyor':'borç yok'}</div>
+    </div>
+   </div>
+   <div class="quick">
+    <button class="qbtn qsell tap" onclick="openSheet('Satış')">${ic('plus',16,'#fff')} Satış ekle</button>
+    <button class="qbtn qcoll tap" onclick="openSheet('Tahsil')">${ic('plus',16,'#fff')} Tahsilat</button>
+   </div>
+  </div>
+  <div class="sec">Modüller</div>
+  <div class="grid2">
+   ${MODS.map(x=>`<div class="modcard tap" onclick="go('${x.id}')"><div class="mi" style="background:${x.bg};">${ic(x.ic,21,x.col)}</div><div><div class="ml">${x.t}</div><div class="mv">${x.sub()}</div></div></div>`).join("")}
+  </div>
+  <div class="wide tap" onclick="go('siparisler')">
+   <div class="mi" style="background:#2A1414;">${ic('box',23,'#FF6B5E')}</div>
+   <div style="flex:1;min-width:0;"><div class="ml" style="font-size:14.5px;color:#fff;font-weight:700;">Siparişlerim</div><div class="mv" style="font-size:11.5px;color:var(--muted);">${O().length} sipariş · ${oAcik()} cihaz yolda/bekleyen</div></div>
+   ${ic('chev',18,'#6A6A6A')}
+  </div>
+  <div class="wide tap" onclick="go('ersaodeme')">
+   <div class="mi" style="background:#192639;">${ic('upload',22,'#5B8DEF')}</div>
+   <div style="flex:1;min-width:0;"><div class="ml" style="font-size:14.5px;color:#fff;font-weight:700;">Ersa'ya Ödemeler</div><div class="mv" style="font-size:11.5px;color:var(--muted);">borç ${money(ersaBorc())}${ersaBekleyen()?' · '+money(ersaBekleyen())+' onay bekliyor':''}</div></div>
+   ${ic('chev',18,'#6A6A6A')}
+  </div>
+  <div style="text-align:center;margin-top:16px;"><span class="tap" onclick="load()" style="font-size:12px;color:var(--muted);font-weight:600;">${ic('refresh',13,'#8A8A8A')} Verileri yenile</span></div>
+ </div>`;
+}
+function head(title,sub){return `<div class="topbar" style="margin-bottom:2px;"><div class="back tap" onclick="go('panel')">${ic('cl',18)} Panel</div></div><div class="h1" style="font-size:21px;margin-top:6px;">${title}</div>${sub?`<div class="sub">${sub}</div>`:""}`;}
+
+function musterilerView(){
+ const list=custList().map(m=>({m,bak:custBalance(m)})).sort((a,b)=>b.bak-a.bak);
+ return `<div class="pad stg">${head("Müşteriler")}
+  <div class="sec">Cari bakiyeler<span class="scount">${list.length} müşteri</span></div>
+  <div class="blk" style="padding:2px 15px;">
+   ${list.length?list.map(x=>`<div class="lrow tap" onclick="S.exM='${esc(x.m)}';go('ekstre')">
+     <div class="li" style="background:#221A33;">${ic('user',18,'#B98BFF')}</div>
+     <div style="flex:1;min-width:0;"><div class="lt">${esc(x.m)}</div><div class="ls">ekstreyi gör</div></div>
+     <div><div class="amt" style="color:${x.bak>0.5?'#fff':'var(--in)'};">${x.bak>0.5?money(x.bak):'kapalı'}</div><div style="text-align:right;"><span class="bdg ${x.bak>0.5?'bdg-b':'bdg-c'}">${x.bak>0.5?'BORÇLU':'✓ KAPALI'}</span></div></div>
+   </div>`).join(""):`<div class="empty">Henüz müşteri yok.</div>`}
+  </div>
+  <button class="btnp tap" onclick="openSheet('Müşteri')">${ic('plus',16,'#fff')} Müşteri ekle</button>
+ </div>`;
+}
+
+function hareketListesi(tur){
+ const sat=tur==="Satış";
+ const arr=H().map((x,i)=>({...x,_i:i})).filter(x=>x.Tur===tur).sort((a,b)=>(String(a.Tarih)<String(b.Tarih)?1:String(a.Tarih)>String(b.Tarih)?-1:b._i-a._i));
+ return `<div class="pad stg">${head(sat?"Satışlar":"Tahsilatlar")}
+  <div class="sec">${sat?"Kesilen faturalar":"Alınan tahsilatlar"}<span class="scount">${arr.length} kayıt · ${money(sumT(arr))}</span></div>
+  <div class="blk" style="padding:2px 15px;">
+   ${arr.length?arr.map(x=>`<div class="lrow">
+     <div class="li" style="background:${sat?'#2A1414':'#192639'};">${ic(sat?'receipt':'wallet',18,sat?'var(--borc)':'var(--in)')}</div>
+     <div style="flex:1;min-width:0;"><div class="lt">${esc(x.Musteri)}</div><div class="ls">${dT(x.Tarih)} · ${esc(x.FaturaNo||"")}${x.Aciklama?' · '+esc(x.Aciklama):''}</div></div>
+     <div class="amt" style="color:${sat?'var(--borc)':'var(--in)'};">${sat?'+':'−'}${money(num(x.Tutar))}</div>
+   </div>`).join(""):`<div class="empty">Kayıt yok.</div>`}
+  </div>
+  <button class="btnp tap" style="background:${sat?'var(--borc)':'var(--in)'};box-shadow:none;" onclick="openSheet('${tur}')">${ic('plus',16,'#fff')} ${sat?'Satış':'Tahsilat'} ekle</button>
+ </div>`;
+}
+
+function ekstreView(){
+ const f=S.exM,rows=ekstre(f);
+ const borc=sumT(rows.filter(r=>r.Tur==="Satış")),alacak=sumT(rows.filter(r=>r.Tur==="Tahsil")),bak=borc-alacak;
+ const chips=["",...custList()];
+ return `<div class="pad stg">${head("Cari Ekstre",f||"Genel — ERSA Analiz Makinası")}
+  <div class="exhead">
+   <div class="exb"><div class="el">BORÇ</div><div class="ev" style="color:var(--borc);">${money(borc)}</div></div>
+   <div class="exb"><div class="el">ALACAK</div><div class="ev" style="color:var(--in);">${money(alacak)}</div></div>
+   <div class="exb"><div class="el">BAKİYE</div><div class="ev" style="color:#fff;">${money(bak)}</div></div>
+  </div>
+  <div class="chips">${chips.map(c=>`<div class="chip tap ${c===f?'on':''}" onclick="S.exM='${esc(c)}';render()">${c?esc(String(c).split(' ')[0]):'Genel'}</div>`).join("")}</div>
+  <div class="blk" style="padding:4px 15px;">
+   ${rows.length?rows.map(r=>{const sat=r.Tur==="Satış";return `<div class="exrow">
+     <div class="exdate">${dS(r.Tarih)}<br>${dY(r.Tarih)}</div>
+     <div style="flex:1;min-width:0;"><div class="extur">${sat?"Satış Faturası":"Tahsilat"}</div><div class="exack">${esc(r.Musteri)}${r.Aciklama?' · '+esc(r.Aciklama):''}</div></div>
+     <div class="exright"><div class="examt" style="color:${sat?'var(--borc)':'var(--in)'};">${sat?'+':'−'}${money(num(r.Tutar))}</div><div class="exbak">${money(r.bak)} [B]</div></div>
+   </div>`;}).join(""):`<div class="empty">Hareket yok.</div>`}
+  </div>
+  <div class="exfoot">
+   <div class="efc"><div class="efl">TOPLAM BORÇ</div><div class="efv" style="color:var(--borc);">${money(borc)}</div></div>
+   <div class="efc" style="border-left:1px solid #2a2a2a;border-right:1px solid #2a2a2a;"><div class="efl">TAHSİLAT</div><div class="efv" style="color:var(--in);">${money(alacak)}</div></div>
+   <div class="efc"><div class="efl">BAKİYE [B]</div><div class="efv" style="color:#fff;">${money(bak)}</div></div>
+  </div>
+ </div>`;
+}
+
+function siparisView(){
+ const tes=O().filter(o=>o.Durum==="Teslim").reduce((s,o)=>s+num(o.Adet),0);
+ return `<div class="pad stg">${head("Siparişlerim","Altın Analiz Cihazı")}
+  <div class="k4">
+   <div class="kbox"><div class="kv" style="color:#fff;">${oAcik()}</div><div class="kl">Yolda + bekleyen</div></div>
+   <div class="kbox"><div class="kv" style="color:var(--purple);">${oYol()}</div><div class="kl">Yolda</div></div>
+   <div class="kbox"><div class="kv" style="color:#fff;">${tes}</div><div class="kl">Teslim aldım</div></div>
+  </div>
+  <button class="btnp tap" onclick="openSheet('siparisYeni')">${ic('plus',16,'#fff')} Yeni sipariş ver</button>
+  <div class="sec" style="margin-top:18px;">Siparişlerim<span class="scount">${O().length} kayıt</span></div>
+  ${O().length?O().slice().reverse().map(orderCard).join(""):`<div class="empty">Henüz siparişin yok.<br>Yukarıdan yeni sipariş ver.</div>`}
+ </div>`;
+}
+function orderCard(o){const s=ST[o.Durum]||ST["Bekliyor"];return `<div class="ocard tap" onclick="S.sel='${esc(o.ID)}';openSheet('siparisDetay')">
+  <div class="oi" style="background:${s.bg};"><div class="oqty">${num(o.Adet)}<small> ad</small></div></div>
+  <div style="flex:1;min-width:0;">
+   <div class="ot">Sipariş #${esc(o.ID)}</div>
+   <div class="os">Talep ${dS(o.TalepTarihi)} · istenen ${dS(o.IstenenTarih)}</div>
+   <div style="margin-top:7px;"><span class="badge" style="background:${s.bg};color:${s.c};">${ic(s.ic,12,s.c)} ${esc(o.Durum)}</span></div>
+   <div class="eta">Tahmini teslim: <b style="color:#cfcfcf;">${dT(o.ETA)}</b></div>
+  </div></div>`;}
+
+function ersaOdemeView(){
+ return `<div class="pad stg">${head("Ersa'ya Ödemeler","Senden alınan makinelerin ödemesi")}
+  <div class="blk" style="padding:17px 18px;margin-top:6px;">
+   <div style="font-size:10px;font-weight:700;letter-spacing:1.3px;color:#9b9b95;">ERSA'YA KALAN BORÇ ($)</div>
+   <div class="bignum" style="font-size:30px;color:var(--borc);margin-top:3px;">${money(ersaBorc())}</div>
+   <div class="kgrid3">
+    <div class="kbox"><div class="kl">Toplam alım</div><div class="kv" style="color:#fff;">${money(ersaAlim())}</div></div>
+    <div class="kbox"><div class="kl">Onaylı ödeme</div><div class="kv" style="color:var(--in);">${money(ersaOnayli())}</div></div>
+    <div class="kbox"><div class="kl">Onay bekleyen</div><div class="kv" style="color:var(--gold);">${money(ersaBekleyen())}</div></div>
+   </div>
+  </div>
+  <button class="btnp tap" onclick="openSheet('odemeYeni')">${ic('upload',16,'#fff')} ERSA'ya ödeme bildir</button>
+  <div class="sec" style="margin-top:18px;">Gönderdiğim ödemeler<span class="scount">${EO().length} kayıt</span></div>
+  <div class="blk" style="padding:2px 15px;">
+   ${EO().length?EO().slice().reverse().map(p=>{const s=PST[p.Durum]||PST["Bildirildi"];return `<div class="lrow tap" onclick="S.sel='${esc(p.ID)}';openSheet('odemeDetay')">
+     <div class="li" style="background:${s.bg};">${ic('upload',17,s.c)}</div>
+     <div style="flex:1;min-width:0;"><div class="lt">${money(num(p.Tutar))}</div><div class="ls">${dT(p.Tarih)} · ${esc(p.Yontem||"")}</div></div>
+     <div style="text-align:right;"><span class="bdg" style="background:${s.bg};color:${s.c};">${p.Durum==='Onaylandı'?'✓ '+s.t:s.t}</span></div>
+   </div>`;}).join(""):`<div class="empty">Henüz ödeme bildirimi yok.</div>`}
+  </div>
+  <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:12px;line-height:1.55;">Sen ödemeyi <b>onayladığında</b> ERSA'ya borç düşer.<br>Müşteriden net alacak bundan etkilenmez — iki bakiye ayrı.</div>
+ </div>`;
+}
+
+/* ===== SHEET'LER ===== */
+function sheetForm(){
+ const k=S.sheet;
+ if(k==="Müşteri") return wrap("Müşteri ekle",`
+   <label class="lbl">Şirket / Müşteri adı</label><input id="muSirket" class="field" placeholder="örn. KORTECH MÜHENDİSLİK">
+   <div class="row2"><div><label class="lbl">Şehir</label><input id="muSehir" class="field" placeholder="Afyon"></div><div><label class="lbl">Telefon</label><input id="muTel" class="field" placeholder="5__ ___ __ __"></div></div>
+   <button class="btnp tap" id="muBtn" onclick="saveMusteri()">${ic('check',16,'#fff')} Kaydet</button>`);
+ if(k==="siparisYeni") return wrap("Yeni sipariş",`
+   <div class="sub" style="margin-bottom:4px;">Altın Analiz Cihazı</div>
+   <label class="lbl">Adet</label><input id="spAdet" class="field mono" type="number" inputmode="numeric" placeholder="örn. 5">
+   <label class="lbl">İstenen teslim tarihi</label><input id="spIstenen" class="field mono" type="date" value="${todayISO()}">
+   <label class="lbl">Not (opsiyonel)</label><input id="spNot" class="field" placeholder="örn. acil, fuar için">
+   <button class="btnp tap" id="spBtn" onclick="saveSiparis()">${ic('check',16,'#fff')} Siparişi gönder</button>
+   <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:10px;">Sipariş “Bekliyor” olarak ERSA'ya düşer.</div>`);
+ if(k==="siparisDetay"){const o=O().find(x=>String(x.ID)===String(S.sel));if(!o)return"";const cur=S.tmp||o.Durum;
+   return wrap(`Sipariş #${esc(o.ID)} · ${num(o.Adet)} adet`,`
+   <div class="sub" style="margin:-2px 0 4px;">Talep ${dT(o.TalepTarihi)} · istenen teslim ${dT(o.IstenenTarih)}</div>
+   <label class="lbl">Durum güncelle <span style="color:var(--muted);font-weight:600;">(siz de değiştirebilirsiniz)</span></label>
+   <div class="steps">${STORDER.map(st=>{const s=ST[st];const a=st===cur;return `<div class="step tap" style="${a?'border-color:'+s.c+';':''}" onclick="S.tmp='${st}';render()"><div class="sd" style="background:${a?s.bg:'#222'};">${ic(s.ic,13,a?s.c:'#666')}</div><div class="sn" style="${a?'color:'+s.c:''}">${st}</div>${a?'<div style="margin-left:auto;">'+ic('check',16,s.c)+'</div>':''}</div>`;}).join("")}</div>
+   <label class="lbl">Tahmini teslim (ETA)</label><input id="spEta" class="field mono" type="date" value="${o.ETA||''}">
+   <button class="btnp tap" id="sdBtn" onclick="saveSiparisDurum('${esc(o.ID)}')">${ic('check',16,'#fff')} Kaydet</button>`);
+ }
+ if(k==="odemeYeni") return wrap("ERSA'ya ödeme bildir",`
+   <div class="sub" style="margin-bottom:4px;">Gönderdiğin tutarı bildir; ERSA onaylayınca borç düşer.</div>
+   <label class="lbl">Tutar ($)</label><input id="odTutar" class="field mono" type="number" inputmode="decimal" placeholder="örn. 8000">
+   <div class="row2"><div><label class="lbl">Tarih</label><input id="odTarih" class="field mono" type="date" value="${todayISO()}"></div><div><label class="lbl">Yöntem</label><select id="odYontem" class="field"><option>Havale</option><option>EFT</option><option>Nakit</option></select></div></div>
+   <label class="lbl">Dekont / Not (opsiyonel)</label><input id="odDekont" class="field" placeholder="dekont no veya açıklama">
+   <button class="btnp tap" id="odBtn" onclick="saveOdeme()">${ic('check',16,'#fff')} Ödemeyi bildir</button>
+   <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:10px;">“Onay bekliyor” olarak ERSA'ya düşer.</div>`);
+ if(k==="odemeDetay"){const p=EO().find(x=>String(x.ID)===String(S.sel));if(!p)return"";const cur=S.tmp||p.Durum;
+   return wrap(`Ödeme · ${money(num(p.Tutar))}`,`
+   <div class="sub" style="margin:-2px 0 8px;">${dT(p.Tarih)} · ${esc(p.Yontem||"")}</div>
+   <label class="lbl">Durum</label>
+   <div class="steps">${["Bildirildi","Onaylandı"].map(st=>{const cc=PST[st].c;const a=st===cur;return `<div class="step tap" style="${a?'border-color:'+cc+';':''}" onclick="S.tmp='${st}';render()"><div class="sd" style="background:${a?PST[st].bg:'#222'};">${ic(st==='Onaylandı'?'check':'clock',13,a?cc:'#666')}</div><div class="sn" style="${a?'color:'+cc:''}">${st==='Onaylandı'?'Onaylandı — borçtan düş':'Bildirildi — onay bekliyor'}</div>${a?'<div style="margin-left:auto;">'+ic('check',16,cc)+'</div>':''}</div>`;}).join("")}</div>
+   <button class="btnp tap" id="omBtn" onclick="saveOdemeDurum('${esc(p.ID)}')">${ic('check',16,'#fff')} Kaydet</button>`);
+ }
+ const sat=k==="Satış";
+ return wrap("İşlem ekle",`
+  <div class="toggle"><button class="${sat?'bon':''}" onclick="S.sheet='Satış';render()">Satış (Borç)</button><button class="${!sat?'kon':''}" onclick="S.sheet='Tahsil';render()">Tahsilat (Alacak)</button></div>
+  <label class="lbl">Müşteri</label><input id="ftM" class="field" list="cl" placeholder="Müşteri seç / yaz"><datalist id="cl">${custList().map(c=>`<option value="${esc(c)}">`).join("")}</datalist>
+  <div class="row2"><div><label class="lbl">Tarih</label><input id="ftT" class="field mono" type="date" value="${todayISO()}"></div><div><label class="lbl">Tutar ($)</label><input id="ftV" class="field mono" type="number" inputmode="decimal" placeholder="0"></div></div>
+  <label class="lbl">${sat?'Fatura No':'Açıklama'}</label><input id="ftR" class="field" placeholder="${sat?'FİS0000000/00902':'tahsilat notu'}">
+  <button class="btnp tap" id="ftBtn" style="background:${sat?'var(--borc)':'var(--in)'};" onclick="saveHareket('${sat?'Satış':'Tahsil'}')">${ic('check',16,'#fff')} Kaydet</button>
+  <div style="font-size:11.5px;color:var(--muted2);text-align:center;margin-top:10px;">${sat?'Borç olarak işlenir, müşteri bakiyesi artar.':'Alacak olarak işlenir, müşteri bakiyesi düşer.'}</div>`);
+}
+function wrap(t,inner){return `<div class="ovl" onclick="if(event.target===this){closeSheet();}"><div class="sheet"><div class="shead"><div class="stt">${t}</div><div class="circ tap" onclick="closeSheet()">${ic('x',16,'#EDEDED')}</div></div>${inner}</div></div>`;}
+
+/* ===== AKSİYONLAR ===== */
+function busy(id,txt){const b=$(id);if(b){b.style.opacity=".6";b.style.pointerEvents="none";b.textContent=txt;}}
+async function saveHareket(tur){
+ const m=($("ftM").value||"").trim(),t=$("ftT").value,tut=num($("ftV").value),ref=($("ftR").value||"").trim();
+ if(!m){toast("Müşteri yazın");return;} if(!tut){toast("Tutar yazın");return;}
+ busy("ftBtn","Kaydediliyor…");
+ try{await post({action:"addHareket",tur,musteri:m,tarih:t,tutar:tut,fno:tur==="Satış"?ref:"",ack:tur==="Tahsil"?ref:""});closeSheet();toast("Kaydedildi");await load();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+async function saveMusteri(){
+ const s=($("muSirket").value||"").trim();if(!s){toast("Müşteri adı yazın");return;}
+ busy("muBtn","Kaydediliyor…");
+ try{await post({action:"addMusteri",sirket:s,sehir:($("muSehir").value||"").trim(),tel:($("muTel").value||"").trim()});closeSheet();toast("Müşteri eklendi");await load();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+async function saveSiparis(){
+ const a=num($("spAdet").value);if(!a){toast("Adet yazın");return;}
+ busy("spBtn","Gönderiliyor…");
+ try{await post({action:"addSiparis",adet:a,istenen:$("spIstenen").value,not:($("spNot").value||"").trim()});closeSheet();toast("Sipariş gönderildi");await load();S.view="siparisler";render();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+async function saveSiparisDurum(id){
+ const durum=S.tmp||(O().find(x=>String(x.ID)===String(id))||{}).Durum;const eta=$("spEta")?$("spEta").value:"";
+ busy("sdBtn","Kaydediliyor…");
+ try{await post({action:"siparisDurum",id,durum,eta});closeSheet();toast("Güncellendi");await load();S.view="siparisler";render();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+async function saveOdeme(){
+ const tut=num($("odTutar").value);if(!tut){toast("Tutar yazın");return;}
+ busy("odBtn","Bildiriliyor…");
+ try{await post({action:"addOdeme",tarih:$("odTarih").value,tutar:tut,yontem:$("odYontem").value,dekont:($("odDekont").value||"").trim()});closeSheet();toast("Ödeme bildirildi");await load();S.view="ersaodeme";render();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+async function saveOdemeDurum(id){
+ const durum=S.tmp||(EO().find(x=>String(x.ID)===String(id))||{}).Durum;
+ busy("omBtn","Kaydediliyor…");
+ try{await post({action:"odemeDurum",id,durum});closeSheet();toast("Güncellendi");await load();S.view="ersaodeme";render();}
+ catch(e){toast("Hata: "+e.message);render();}
+}
+
+function openSheet(k){S.tmp=null;S.sheet=k;render();}
+function closeSheet(){S.tmp=null;S.sheet=null;render();}
+function go(v){S.view=v;S.sheet=null;render();}
+function render(){
+ if(!S.authed){$("scr").innerHTML=loginView();$("host").innerHTML="";const p=$("lpass");if(p)p.addEventListener("keydown",e=>{if(e.key==="Enter")doLogin();});return;}
+ if(S.loading){$("scr").innerHTML=`<div class="pad"><div class="empty" style="padding-top:130px;">${ic('refresh',30,'#5A5A5A')}<div style="margin-top:10px;">Yükleniyor…</div></div></div>`;$("host").innerHTML="";return;}
+ const v=S.view;
+ $("scr").innerHTML = v==="panel"?panelView():v==="musteriler"?musterilerView():v==="satislar"?hareketListesi("Satış"):v==="tahsilatlar"?hareketListesi("Tahsil"):v==="ekstre"?ekstreView():v==="siparisler"?siparisView():v==="ersaodeme"?ersaOdemeView():panelView();
+ $("host").innerHTML = S.sheet?sheetForm():"";
+ $("scr").scrollTop=0;
+}
+function clk(){const d=new Date();const el=$("clock");if(el)el.textContent=String(d.getHours()).padStart(2,"0")+":"+String(d.getMinutes()).padStart(2,"0");}
+clk();setInterval(clk,30000);
+if(S.authed){load();}else{S.loading=false;render();}
+
+</script>
+<script>if('serviceWorker' in navigator){window.addEventListener('load',function(){navigator.serviceWorker.register('sw.js').catch(function(){});});}</script>
+</body>
+</html>
