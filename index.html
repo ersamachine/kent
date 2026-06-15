@@ -121,14 +121,12 @@ i.ic svg{display:block;}
 .ersaby{text-align:center;font-size:11px;color:var(--muted2);margin-top:22px;}
 .empty{text-align:center;color:var(--muted);padding:34px 16px;font-size:13px;line-height:1.6;}
 @media (max-width:560px){body{padding:10px 0 40px;}.phone{width:100%;height:88vh;border-radius:0;}.inner{border-radius:0;}.lead{padding:0 14px;}}
-
 .rememberbox{display:flex;align-items:center;gap:8px;font-size:13px;color:var(--muted);margin:2px 0 16px;cursor:pointer;}
 .rememberbox input{width:16px;height:16px;accent-color:var(--red);}
 .lerr{color:#FF6B5E;font-size:12.5px;text-align:center;margin-top:12px;min-height:16px;}
 .banner{background:#2A1414;border:1px solid #4a2222;color:#FF9b8e;font-size:12.5px;border-radius:12px;padding:10px 13px;margin-top:12px;}
 #toasthost{position:absolute;left:0;right:0;bottom:26px;display:flex;justify-content:center;z-index:90;pointer-events:none;}
-.toast{background:#000;color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:24px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:fd .2s;max-width:80%;text-align:center;}
-</style>
+.toast{background:#000;color:#fff;font-size:13px;font-weight:600;padding:11px 18px;border-radius:24px;box-shadow:0 8px 24px rgba(0,0,0,.5);animation:fd .2s;max-width:80%;text-align:center;}</style>
 </head>
 <body>
 <div class="stage"><div class="phone"><div class="inner" id="app">
@@ -153,7 +151,7 @@ const trsort=(a,b)=>String(a).localeCompare(String(b),"tr");
 
 const ST={"Bekliyor":{c:"#F5A623",bg:"#2C2410",ic:"clock"},"Üretimde":{c:"#5B8DEF",bg:"#192639",ic:"wrench"},"Yolda":{c:"#B98BFF",bg:"#221A33",ic:"truck"},"Teslim":{c:"#CFCFCF",bg:"#262626",ic:"check"}};
 const STORDER=["Bekliyor","Üretimde","Yolda","Teslim"];
-const PST={"Bildirildi":{c:"#F5A623",bg:"#2C2410",t:"Onay bekliyor"},"Onaylandı":{c:"#5B8DEF",bg:"#192639",t:"ERSA onayladı"}};
+const PST={"Bildirildi":{c:"#F5A623",bg:"#2C2410",t:"Onay bekliyor"},"Onaylandı":{c:"#5B8DEF",bg:"#192639",t:"ERSA onayladı"},"Reddedildi":{c:"#FF6B5E",bg:"#2A1414",t:"Reddedildi"}};
 
 let DATA={musteriler:[],hareketler:[],siparisler:[],ersaOdemeler:[],ersaAlimlar:[]};
 const H=()=>DATA.hareketler;
@@ -174,6 +172,8 @@ const ersaAlim=()=>DATA.ersaAlimlar.reduce((s,x)=>s+num(x.Tutar),0);
 const ersaOnayli=()=>EO().filter(x=>x.Durum==="Onaylandı").reduce((s,x)=>s+num(x.Tutar),0);
 const ersaBekleyen=()=>EO().filter(x=>x.Durum==="Bildirildi").reduce((s,x)=>s+num(x.Tutar),0);
 const ersaBorc=()=>ersaAlim()-ersaOnayli();
+const borcBaz=()=>sumT(satislar())+ersaAlim();   // KENT'in toplam borcu = satışlar (+ varsa elle alım)
+const ersaKalan=()=>borcBaz()-ersaOnayli();        // kalan = toplam − onaylı ödeme
 
 const AUTH={email:"kent@kentticaret.com",pass:"Kent2026**"};
 function getRemember(){try{return localStorage.getItem("kent_auth")==="1";}catch(e){return false;}}
@@ -229,15 +229,15 @@ function panelView(){
   <div class="blk" style="padding:16px 18px;margin-top:14px;">
    <div style="display:flex;gap:14px;">
     <div style="flex:1;min-width:0;">
-     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">MÜŞTERİDEN NET ALACAK</div>
-     <div class="bignum" style="font-size:25px;color:#fff;margin-top:3px;">${money(T.bakiye)}</div>
-     <div style="font-size:10px;color:var(--muted);margin-top:2px;">${acikMusteri()} açık müşteri</div>
+     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">KALAN ALACAK</div>
+     <div class="bignum" style="font-size:25px;color:#fff;margin-top:3px;">${money(ersaKalan())}</div>
+     <div style="font-size:10px;color:var(--muted);margin-top:2px;">${money(borcBaz())} toplam</div>
     </div>
     <div style="width:1px;background:#2a2a2a;flex-shrink:0;"></div>
     <div style="flex:1;min-width:0;">
-     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">ERSA'YA BORÇ</div>
-     <div class="bignum" style="font-size:25px;color:var(--borc);margin-top:3px;">${money(ersaBorc())}</div>
-     <div style="font-size:10px;color:${ersaBekleyen()?'var(--gold)':'var(--muted)'};margin-top:2px;">${ersaBekleyen()?money(ersaBekleyen())+' onay bekliyor':'borç yok'}</div>
+     <div style="font-size:9.5px;font-weight:700;letter-spacing:.6px;color:#9b9b95;">ERSA'YA ÖDENEN</div>
+     <div class="bignum" style="font-size:25px;color:var(--in);margin-top:3px;">${money(ersaOnayli())}</div>
+     <div style="font-size:10px;color:${ersaBekleyen()?'var(--gold)':'var(--muted)'};margin-top:2px;">${ersaBekleyen()?money(ersaBekleyen())+' onay bekliyor':'onaylı'}</div>
     </div>
    </div>
    <div class="quick">
@@ -348,10 +348,10 @@ function ersaOdemeView(){
  return `<div class="pad stg">${head("Ersa'ya Ödemeler","Senden alınan makinelerin ödemesi · KENT → ERSA")}
   <div class="blk" style="padding:17px 18px;margin-top:6px;">
    <div style="font-size:10px;font-weight:700;letter-spacing:1.3px;color:#9b9b95;">ERSA'YA KALAN BORÇ ($)</div>
-   <div class="bignum" style="font-size:30px;color:var(--borc);margin-top:3px;">${money(ersaBorc())}</div>
+   <div class="bignum" style="font-size:30px;color:var(--borc);margin-top:3px;">${money(ersaKalan())}</div>
    <div class="kgrid3">
-    <div class="kbox"><div class="kl">Toplam alım</div><div class="kv" style="color:#fff;">${money(ersaAlim())}</div></div>
-    <div class="kbox"><div class="kl">Onaylı ödeme</div><div class="kv" style="color:var(--in);">${money(ersaOnayli())}</div></div>
+    <div class="kbox"><div class="kl">Toplam borç</div><div class="kv" style="color:#fff;">${money(borcBaz())}</div></div>
+    <div class="kbox"><div class="kl">Ödenen</div><div class="kv" style="color:var(--in);">${money(ersaOnayli())}</div></div>
     <div class="kbox"><div class="kl">Onay bekleyen</div><div class="kv" style="color:var(--gold);">${money(ersaBekleyen())}</div></div>
    </div>
   </div>
